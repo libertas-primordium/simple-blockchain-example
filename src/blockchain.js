@@ -177,7 +177,16 @@ class Blockchain {
         let self = this
         let stars = []
         return new Promise((resolve, reject) => {
-
+          for (i of self.chain){
+            const data = JSON.parse(hex2ascii(self.chain[i].body))
+            if (data.owner === address){
+              stars.push(self.chain[i])
+            }
+          }
+          if (stars.length > 0){
+            resolve(stars)
+          }
+          else{reject('Not found!')}
         })
     }
 
