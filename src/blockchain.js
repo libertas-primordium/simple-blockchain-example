@@ -200,6 +200,24 @@ class Blockchain {
         let self = this
         let errorLog = []
         return new Promise(async (resolve, reject) => {
+          try{
+            for (i of self.chain){
+              const validated = self.chain[i].validate()
+              if (!validated){
+                errorLog.push({blockHeight:self.chain[i].height, errorMessage:'Validate block by hash failed failed. The block data has been tampered with!'})
+              }
+              if (i>0){
+                if (self.chain[i].previousBlockHash != self.chain[i-1].hash){
+                  errorLog.push({blockHeight:self.chain[i].height, errorMessage:'Previous block hash does not match previous block. The chain is broken!'})
+                }
+              }
+            }
+            resolve(errorLog)
+          }
+          catch(error){
+            reject(error)
+          }
+
 
         })
     }
