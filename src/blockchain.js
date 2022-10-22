@@ -34,19 +34,19 @@ class Blockchain {
      * Passing as a data `{data: 'Genesis Block'}`
      */
     async initializeChain() {
-        if( this.height === -1){
-            let block = new BlockClass.Block({data: 'Genesis Block'})
-            await this._addBlock(block)
-        }
+      if( this.height === -1){
+        let block = new BlockClass.Block({data: 'Genesis Block'})
+        await this._addBlock(block)
+      }
     }
 
     /**
      * Utility method that return a Promise that will resolve with the height of the chain
      */
     getChainHeight() {
-        return new Promise((resolve, reject) => {
-            resolve(this.height)
-        })
+      return new Promise((resolve, reject) => {
+        resolve(this.height)
+      })
     }
 
     /**
@@ -62,23 +62,23 @@ class Blockchain {
      * that this method is a private method.
      */
     _addBlock(block) {
-        let self = this
-        let newBlock = block
-        return new Promise(async (resolve, reject) => {
-          try{
-            if (self.height > 0){
-            newBlock.previousBlockHash = self.chain[0].hash
-            }
-            newBlock.height = self.chain.length - 1
-            newBlock.timestamp = new Date().getTime().toString().slice(0,-3)
-            newBlock.hash = SHA256(JSON.stringify(newBlock))
-            self.chain.push(newBlock)
-            self.height++
-            resolve(newBlock)
-          }catch(error){
-            reject(error)
+      let self = this
+      let newBlock = block
+      return new Promise(async (resolve, reject) => {
+        try{
+          if (self.height > -1){
+          newBlock.previousBlockHash = self.chain[0].hash
           }
-        })
+          newBlock.height = self.chain.length
+          newBlock.timestamp = new Date().getTime().toString().slice(0,-3)
+          newBlock.hash = SHA256(JSON.stringify(newBlock))
+          self.chain.push(newBlock)
+          self.height++
+          resolve(newBlock)
+        }catch(error){
+          reject(error)
+        }
+      })
     }
 
     /**
@@ -90,9 +90,10 @@ class Blockchain {
      * @param {*} address
      */
     requestMessageOwnershipVerification(address) {
-        return new Promise((resolve) => {
-
-        })
+      return new Promise((resolve) => {
+        const message = `${address}:${new Date().getTime().toString().slice(0,-3)}:starRegistry`
+        resolve(message)
+      })
     }
 
     /**
@@ -113,10 +114,21 @@ class Blockchain {
      * @param {*} star
      */
     submitStar(address, message, signature, star) {
-        let self = this
-        return new Promise(async (resolve, reject) => {
-
-        })
+      let self = this
+      return new Promise(async (resolve, reject) => {
+        const blockTime = parseInt(message.split(':')[1])
+        const currentTime = parseInt(new Date().getTime().toString().slice(0,-3))
+        if (blockTime + 300 > currentTime){
+          const verifyMessage = bitcoinMessage.verify(message, address, signature)
+          if (verifyMessage){
+            const newBlock = new BlockClass.Block({star:star, owner:address})
+            const processedBlock = await self._addBlock(newBlock)
+            resolve(processedBlock)
+          }
+          else{reject('Message verification failed!')}
+        }
+        else{reject('Invalid timestamp!')}
+      })
     }
 
     /**
@@ -128,7 +140,13 @@ class Blockchain {
     getBlockByHash(hash) {
         let self = this
         return new Promise((resolve, reject) => {
-
+          const ID = hash
+          for (let i of self.chain){
+            if (ID === self.chain[i].hash){
+              resolve(self.chain[i])
+            }
+          }
+          reject('Not found!')
         })
     }
 
