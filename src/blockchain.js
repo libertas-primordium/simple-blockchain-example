@@ -178,8 +178,9 @@ class Blockchain {
         let stars = []
         return new Promise(async (resolve, reject) => {
           for (let i in self.chain){
-            const data = await self.chain[i].getBData()
+
             if (i<1){continue}
+            const data = await self.chain[i].getBData()
             if (data.owner === address){
               stars.push(data)
             }
