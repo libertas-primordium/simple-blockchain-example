@@ -18,6 +18,18 @@ class BlockchainController {
         this.getStarsByOwner();
     }
 
+    validateChain(){
+      this.app.get("/validateChain", async (req, res) => {
+        const validate = await this.blockchain.validateChain()
+        if (validate){
+          return res.status(200).json(validate)
+        }
+        else {
+          return res.status(500).send("Error validating chain")
+        }
+      })
+    }
+
     // Enpoint to Get a Block by Height (GET Endpoint)
     getBlockByHeight() {
         this.app.get("/block/height/:height", async (req, res) => {

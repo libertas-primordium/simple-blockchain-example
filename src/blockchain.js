@@ -71,7 +71,7 @@ class Blockchain {
           }
           newBlock.height = self.chain.length
           newBlock.timestamp = new Date().getTime().toString().slice(0,-3)
-          newBlock.hash = SHA256(JSON.stringify(newBlock))
+          newBlock.hash = SHA256(JSON.stringify(newBlock)).toString()
           self.chain.push(newBlock)
           self.height++
           resolve(newBlock)
@@ -207,7 +207,7 @@ class Blockchain {
         let errorLog = []
         return new Promise(async (resolve, reject) => {
           try{
-            for (i in self.chain){
+            for (let i in self.chain){
               const validated = await self.chain[i].validate()
               if (!validated){
                 errorLog.push({blockHeight:self.chain[i].height, errorMessage:'Validate block by hash failed failed. The block data has been tampered with!'})
