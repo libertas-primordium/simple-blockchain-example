@@ -41,7 +41,7 @@ class Block {
             // Save in auxiliary variable the current block hash
             let recordedHash = self.hash
             // Recalculate the hash of the Block
-            let checkHash = SHA256(JSON.stringify(self))
+            let checkHash = SHA256(JSON.stringify(self)).toString()
             // Comparing if the hashes changed
             if (recordedHash != checkHash){
               reject(false)// Returning the Block is not valid
@@ -63,7 +63,7 @@ class Block {
     getBData() {
       let self = this
       return new Promise((resolve, reject) => {
-        if (self.height > 0){
+        if (self.height > 0){ // checking for genesis block.
           // Getting the encoded data saved in the Block
         // Decoding the data to retrieve the JSON representation of the object
         let data = hex2ascii(self.body)
@@ -72,7 +72,7 @@ class Block {
         // Resolve with the data if the object isn't the Genesis block
         resolve(dataObject)
         }
-        else{reject('Error: Genesis block!')}
+        else{reject('Error: Genesis block!')} //reject with error if block height not greater than 0
       })
 
 

@@ -123,6 +123,10 @@ class Blockchain {
           if (verifyMessage){
             const newBlock = new BlockClass.Block({star:star, owner:address})
             const processedBlock = await self._addBlock(newBlock)
+            const validate = await self.validateChain()
+            if (validate.length > 0){
+              reject(validate)
+            }
             resolve(processedBlock)
           }
           else{reject('Message verification failed!')}
@@ -203,8 +207,8 @@ class Blockchain {
         let errorLog = []
         return new Promise(async (resolve, reject) => {
           try{
-            for (i of self.chain){
-              const validated = self.chain[i].validate()
+            for (i in self.chain){
+              const validated = await self.chain[i].validate()
               if (!validated){
                 errorLog.push({blockHeight:self.chain[i].height, errorMessage:'Validate block by hash failed failed. The block data has been tampered with!'})
               }
