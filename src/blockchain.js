@@ -67,10 +67,11 @@ class Blockchain {
       return new Promise(async (resolve, reject) => {
         try{
           if (self.height > -1){
-          newBlock.previousBlockHash = self.chain[0].hash
+          newBlock.previousBlockHash = self.chain[self.chain.length-1].hash
           }
           newBlock.height = self.chain.length
           newBlock.timestamp = new Date().getTime().toString().slice(0,-3)
+          newBlock.hash = null
           newBlock.hash = SHA256(JSON.stringify(newBlock)).toString()
           self.chain.push(newBlock)
           self.height++
