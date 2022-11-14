@@ -44,7 +44,7 @@ class Block {
             let checkHash = SHA256(JSON.stringify(self)).toString()
             // Comparing if the hashes changed
             if (recordedHash != checkHash){
-              reject(false)// Returning the Block is not valid
+              resolve(false)// Returning the Block is not valid
             }
             // Returning the Block is valid
             resolve(true)
